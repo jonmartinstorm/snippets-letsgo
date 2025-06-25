@@ -19,7 +19,7 @@ func main() {
 
 	err := http.ListenAndServe(":4000", mux)
 	if err != nil {
-		slog.Error("Failed to start server", err)
+		slog.Error("Failed to start server", "error", err)
 		os.Exit(1)
 	}
 }
