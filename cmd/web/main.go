@@ -1,15 +1,20 @@
 package main
 
 import (
+	"flag"
 	"log/slog"
 	"net/http"
 	"os"
 )
 
 func main() {
-	slog.NewJSONHandler(os.Stdout, nil)
+	addr := flag.String("addr", ":4000", "HTTP network address")
+	flag.Parse()
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	mux := http.NewServeMux()
+
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
@@ -18,11 +23,13 @@ func main() {
 	mux.HandleFunc("GET /snippet/create", snippetCreate)
 	mux.HandleFunc("POST /snippet/create", snippetCreatePost)
 
-	slog.Info("starting server on :4000")
+	mux.HandleFunc("GET /api/v1/snippet/view/{id}", snippetApiView)
 
-	err := http.ListenAndServe(":4000", mux)
+	logger.Info("starter server på", "addr", *addr)
+
+	err := http.ListenAndServe(*addr, mux)
 	if err != nil {
-		slog.Error("Failed to start server", "error", err)
+		logger.Error("feil i starting av server", "error", err)
 		os.Exit(1)
 	}
 }
