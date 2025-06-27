@@ -1,6 +1,23 @@
 {{define "title"}}Hjem{{end}}
 
 {{define "main"}}
-<h2>Siste snippet</h2>
+<h2>Last snippets</h2>
+{{if .Snippets}}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>ID</th>
+    </tr>
+    {{range .Snippets}}
+    <tr>
+        <td><a href="/snippet/view/{{.ID}}">{{.Title}}</a></td>
+        <td>{{.Created}}</td>
+        <td>#{{.ID}}</td>
+    </tr>
+    {{end}}
+</table>
+{{else}}
 <p>Det er ikke noe å se her enda.</p>
+{{end}}
 {{end}}
