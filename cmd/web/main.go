@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,8 +13,9 @@ import (
 )
 
 type application struct {
-	logger   *slog.Logger
-	snippets *models.SnippetModel
+	logger         *slog.Logger
+	snippets       *models.SnippetModel
+	termplateCache map[string]*template.Template
 }
 
 func main() {
@@ -31,16 +33,23 @@ func main() {
 	}
 	defer db.Close()
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
 	app := &application{
-		logger:   logger,
-		snippets: &models.SnippetModel{DB: db},
+		logger:         logger,
+		snippets:       &models.SnippetModel{DB: db},
+		termplateCache: templateCache,
 	}
 
 	logger.Info("starter server på", "addr", *addr)
 
 	err = http.ListenAndServe(*addr, app.routes())
 	if err != nil {
-		logger.Error("feil i starting av server", "error", err)
+		logger.Error("feil i start av server", "error", err)
 		os.Exit(1)
 	}
 }

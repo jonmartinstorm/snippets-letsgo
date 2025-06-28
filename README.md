@@ -2,6 +2,9 @@
 
 Følger boka til Alex Edwards: [https://lets-go.alexedwards.net/](https://lets-go.alexedwards.net/)
 
+```
+air -- --addr :9999
+```
 
 # Mysql
 
@@ -19,3 +22,5 @@ podman run --name mysql-test \
 podman exec -it mysql-test mysql -u root -p
 podman exec -it mysql-test mysql -D snippetbox -u web -p
 ```
+
+
