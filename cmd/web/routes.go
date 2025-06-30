@@ -2,7 +2,7 @@ package main
 
 import "net/http"
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
@@ -15,5 +15,5 @@ func (app *application) routes() *http.ServeMux {
 
 	mux.HandleFunc("GET /api/v1/snippet/view/{id}", app.snippetApiView)
 
-	return mux
+	return commonHeaders((mux))
 }
