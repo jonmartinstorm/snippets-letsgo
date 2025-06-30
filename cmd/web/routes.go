@@ -15,5 +15,5 @@ func (app *application) routes() http.Handler {
 
 	mux.HandleFunc("GET /api/v1/snippet/view/{id}", app.snippetApiView)
 
-	return app.logRequests(commonHeaders(mux))
+	return app.recoverPanic(app.logRequests(commonHeaders(mux)))
 }
