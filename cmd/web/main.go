@@ -13,9 +13,9 @@ import (
 )
 
 type application struct {
-	logger         *slog.Logger
-	snippets       *models.SnippetModel
-	termplateCache map[string]*template.Template
+	logger        *slog.Logger
+	snippets      *models.SnippetModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -40,9 +40,9 @@ func main() {
 	}
 
 	app := &application{
-		logger:         logger,
-		snippets:       &models.SnippetModel{DB: db},
-		termplateCache: templateCache,
+		logger:        logger,
+		snippets:      &models.SnippetModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	logger.Info("starter server på", "addr", *addr)

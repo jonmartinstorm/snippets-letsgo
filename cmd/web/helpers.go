@@ -22,7 +22,7 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 }
 
 func (app *application) render(w http.ResponseWriter, r *http.Request, status int, page string, data templateData) {
-	ts, ok := app.termplateCache[page]
+	ts, ok := app.templateCache[page]
 	if !ok {
 		err := fmt.Errorf("templaten %s finnes ikke", page)
 		app.serverError(w, r, err)

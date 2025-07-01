@@ -1,0 +1,32 @@
+{{define "title"}}Lag en ny snippet{{.Snippet.ID}}{{end}}
+
+{{define "main"}}
+<form accept="/snippet/create" method="POST">
+    <div>
+        <label>Tittel:</label>
+        {{with .Form.FieldErrors.title}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <input type="text" name="title" value="{{.Form.Title}}">
+    </div>
+    <div>
+        <label>Innhold:</label>
+        {{with .Form.FieldErrors.content}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <textarea name="content">{{.Form.Content}}</textarea>    
+    </div>
+    <div>
+        <label>Slett om:</label>
+        {{with .Form.FieldErrors.expires}}
+            <label class='error'>{{.}}</label>
+        {{end}}
+        <input type="radio" name="expires" value="365" {{if (eq .Form.Expires 365)}}checked{{end}}> Et år
+        <input type="radio" name="expires" value="7" {{if (eq .Form.Expires 7)}}checked{{end}}> En uke
+        <input type="radio" name="expires" value="1" {{if (eq .Form.Expires 1)}}checked{{end}}> En dag
+    </div>
+    <div>
+        <input type="submit" value="Lagre snippet">
+    </div>
+</form>
+{{end}}
