@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -58,29 +57,19 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+	var form snippetCreateForm
+
+	err := app.decodePostForm(r, &form)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
-	if err != nil {
-		app.clientError(w, http.StatusBadRequest)
-		return
-	}
-
-	form := snippetCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
 	}
 
 	form.CheckField(validator.NotBlanc(form.Title), "title", "Dette feltet kan ikke være tomt")
@@ -102,34 +91,4 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
-}
-
-type Snippet struct {
-	ID     int    `json:"id"`
-	Tittel string `json:"tittel"`
-}
-
-func (app *application) snippetApiView(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil || id < 1 {
-		http.NotFound(w, r)
-		return
-	}
-
-	snippet, err := app.snippets.Get(id)
-	if err != nil {
-		if errors.Is(err, models.ErrNoRecord) {
-			http.NotFound(w, r)
-		} else {
-			app.serverError(w, r, err)
-		}
-		return
-	}
-
-	data := app.newTemplateData(r)
-	data.Snippet = snippet
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data.Snippet)
-
 }
