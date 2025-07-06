@@ -26,7 +26,6 @@ type application struct {
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
-
 	dsn := flag.String("dsn", "web:pass@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
 
@@ -59,13 +58,16 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
-	logger.Info("starter server på", "addr", *addr)
-
-	err = http.ListenAndServe(*addr, app.routes())
-	if err != nil {
-		logger.Error("feil i start av server", "error", err)
-		os.Exit(1)
+	srv := &http.Server{
+		Addr:    *addr,
+		Handler: app.routes(),
 	}
+
+	logger.Info("starter server på", "addr", srv.Addr)
+
+	err = srv.ListenAndServe()
+	logger.Error(err.Error())
+	os.Exit(1)
 }
 
 func openDB(dsn string) (*sql.DB, error) {
